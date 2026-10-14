@@ -1,15 +1,18 @@
 import { NoFirstNodeError } from "./types.js";
 
-// TODO figure out a better way of doing the timeout
+// FIX figure out a better way of doing the timeout
 const TIMEOUT = 1000;
 // TODO replace allTabs with a Map so that I can handle multiple window at once (key: windowId, value: allTabs)
 // TODO don't use Tab objects, but just tab ids
+// TODO rename to mruByWindow
 let allTabs: chrome.tabs.Tab[] = [];
+
+// TODO add variables to keep track of the current window id and also the tabIndex in that window
 
 formInitialList().then(tabs => {
     allTabs = [...tabs];
-    console.log(allTabs);
 }).catch(err => {
+    // FIX figure out a better way of showing user errors outside of dev mode
     if (err instanceof NoFirstNodeError) {
         console.error(err.message);
         return;
@@ -17,6 +20,13 @@ formInitialList().then(tabs => {
     console.error(err);
 });
 
+// TODO add logic for adding a tab
+// TODO add logic for removing a tab
+// TODO add logic for manual switching of a tab
+// TODO add logic for moving tab between windows
+// TODO add logic for when user switches browser windows
+
+// FIX make the code more structured and easier to read without comments
 
 let timeout: number | null = null;
 let tabIndex = 0;
