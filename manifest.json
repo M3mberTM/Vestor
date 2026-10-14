@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Vestor",
+  "version": "1.0.0",
+  "description": "Allows switching between the most recent tabs, similar to what Alt+Tab does on Windows",
+  "permissions": ["tabs", "storage"],
+  "background": {
+    "service_worker": "./dist/background.js",
+    "type": "module"
+  },
+  "commands": {
+    "switch-recent-tab": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "Switch to the most recently used tab"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "./images/icon.png"
+  }
+}
