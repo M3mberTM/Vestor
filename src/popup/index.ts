@@ -1,4 +1,4 @@
-var link = document.getElementById("chromeLink");
+const link = document.getElementById("chromeLink");
 if (!link) {
     console.error("No link on the page")
 } else {
