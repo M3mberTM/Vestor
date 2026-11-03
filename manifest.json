@@ -22,10 +22,5 @@
 			},
 			"description": "Switch to the most recently used tab"
 		}
-	},
-	"action": {
-		"default_title": "Vestor",
-		"default_popup": "popup.html",
-		"default_icon": "./images/icon.png"
 	}
 }
