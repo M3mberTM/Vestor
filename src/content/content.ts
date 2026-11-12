@@ -12,12 +12,12 @@ This script responsibilities:
 
  Since custom/overriden local pages don't work for this, make background have a backup functionality!
 */
-(async () => {
-	const response = await browser.runtime.sendMessage({ greeting: "hello" });
-	// do something with response here, not outside the function
-	console.log(response);
-})();
+// (async () => {
+// 	const response = await browser.runtime.sendMessage({ greeting: "hello" });
+// 	// do something with response here, not outside the function
+// 	console.log(response);
+// })();
 
-chrome.runtime.onMessage.addListener((message) => {
-	console.log(message);
-});
+// chrome.runtime.onMessage.addListener((message) => {
+// 	console.log(message);
+// });
