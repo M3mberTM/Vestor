@@ -2,9 +2,6 @@
 
 A simple chrome extension for switching between different tabs.
 
-> [!NOTE]
-> Add more notes here about usage and other stuff
-
 ## Overall architecture
 
 For now, timeouts are being used as a way to keep track what the user

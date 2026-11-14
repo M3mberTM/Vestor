@@ -81,3 +81,5 @@ chrome.runtime.onStartup.addListener(initialize);
 chrome.runtime.onInstalled.addListener(initialize);
 
 initialize();
+
+console.log("script running");

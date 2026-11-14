@@ -1,26 +1,25 @@
-import * as esbuild from 'esbuild';
+import * as esbuild from "esbuild";
 
-const watch = process.argv.includes('--watch');
+const watch = process.argv.includes("--watch");
 
 /** @type {import('esbuild').BuildOptions} */
 const options = {
-  entryPoints: {
-    'dist/background': 'src/background/background.ts',
-    'dist/content': 'src/content/content.ts',
-  },
-  bundle: true,
-  format: 'iife',
-  target: 'es2022',
-  outdir: '.',
-  legalComments: 'none',
-  logLevel: 'info',
+	entryPoints: {
+		"dist/background": "src/background/background.ts",
+	},
+	bundle: true,
+	format: "iife",
+	target: "es2022",
+	outdir: ".",
+	legalComments: "none",
+	logLevel: "info",
 };
 
 if (watch) {
-  const ctx = await esbuild.context(options);
-  await ctx.watch();
-  console.log('[RecentTabSwitch] esbuild watching for changes…');
+	const ctx = await esbuild.context(options);
+	await ctx.watch();
+	console.log("[RecentTabSwitch] esbuild watching for changes…");
 } else {
-  await esbuild.build(options);
-  console.log('[RecentTabSwitch] build complete');
+	await esbuild.build(options);
+	console.log("[RecentTabSwitch] build complete");
 }
