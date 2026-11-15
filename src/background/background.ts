@@ -11,20 +11,16 @@ browser.windows.onCreated.addListener((window) => {
 })
 
 browser.windows.onRemoved.addListener((windowId) => {
-    initializeCounterAndTimeout(windowId);
+    removeCounterAndTimeout(windowId);
 })
 
 
 browser.tabs.onCreated.addListener(tab => {
-    tabs.addTab(tab.windowId, tab);
+    tabs.addTab(tab.windowId, tab.id);
 });
 
 browser.tabs.onRemoved.addListener((tabId, info) => {
     tabs.removeTab(info.windowId, tabId);
-});
-
-browser.tabs.onUpdated.addListener((_tabId, _changeInfo, tab) => {
-    tabs.updateTab(tab.windowId, tab);
 });
 
 browser.tabs.onActivated.addListener(info => {
@@ -48,13 +44,12 @@ chrome.commands.onCommand.addListener(async (cmd, tab) => {
     if (windowId === undefined) return;
 
     const nextTab = getNextTab(windowId);
+    if (nextTab === undefined) return;
 
-    if (nextTab?.id === undefined) return;
-
-    pendingActivation = nextTab.id;
+    pendingActivation = nextTab;
 
     try {
-        await browser.tabs.update(nextTab.id, {
+        await browser.tabs.update(nextTab, {
             active: true
         });
     } catch (error) {
@@ -81,5 +76,3 @@ chrome.runtime.onStartup.addListener(initialize);
 chrome.runtime.onInstalled.addListener(initialize);
 
 initialize();
-
-console.log("script running");

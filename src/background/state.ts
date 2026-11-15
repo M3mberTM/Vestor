@@ -30,7 +30,7 @@ export function getNextTab(windowId: number) {
 
     timeout = setTimeout(() => {
         resetCounter(windowId)
-        moveToFront(windowId, selectedTab.id!);
+        moveToFront(windowId, selectedTab);
     }, RESET_DELAY);
     windowCounters.set(windowId, counter);
     windowTimeouts.set(windowId, timeout);
