@@ -29,22 +29,24 @@ export async function initializeTabs() {
 
     mru.clear();
 
-    for (const tab of tabs) {
-        if (tab.id === undefined || tab.windowId === undefined) continue
-
-        const windowTabs = mru.get(tab.windowId) ?? [];
-        windowTabs.push(tab.id);
-        mru.set(tab.windowId, windowTabs);
-    }
-
+    // First add the stored tabs in the mru as they preserve the order while the queried tabs don't
     for (const [windowId, windowTabs] of Object.entries(saved)) {
         const currentTabs = mru.get(Number(windowId)) ?? [];
         for (const tabId of windowTabs) {
-            if (windowTabs.includes(tabId)) continue
             currentTabs.push(tabId);
         }
         mru.set(Number(windowId), currentTabs);
     }
+
+    for (const tab of tabs) {
+        if (tab.id === undefined || tab.windowId === undefined) continue
+
+        const windowTabs = mru.get(tab.windowId) ?? [];
+        if (windowTabs.includes(tab.id)) continue
+        windowTabs.push(tab.id);
+        mru.set(tab.windowId, windowTabs);
+    }
+
 
     console.log("Current mru ", mru);
 
