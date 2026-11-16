@@ -9,12 +9,8 @@ let saveQueue = Promise.resolve();
 
 // functions handling saving stuff to storage so that the background worker remembers between resets
 function persistTabs() {
-    const snapshot = Object.fromEntries(
-        [...mru.entries()].map(([windowId, tabs]) => [
-            windowId,
-            tabs
-        ])
-    );
+    const entries =[...mru.entries()].map(([windowId, tabs]) => [ windowId, tabs ])
+    const snapshot = Object.fromEntries(entries);
 
     saveQueue = saveQueue
         .then(() => chrome.storage.session.set({ mru: snapshot }))
@@ -27,48 +23,30 @@ export async function initializeTabs() {
         chrome.storage.session.get("mru")
     ]);
 
-    console.log("initialized tabs", tabs, " and stored: ", stored);
-    // mru.clear();
-
-    // for (const tab of tabs) {
-    //     addTab(tab.windowId, tab);
-    // }
-
+    console.log("Queried tabs ", tabs, " and stored: ", stored);
 
     const saved = (stored["mru"] ?? {}) as  Record<number, number[]>;
 
     mru.clear();
 
     for (const tab of tabs) {
-        const windowId = tab.windowId;
+        if (tab.id === undefined || tab.windowId === undefined) continue
 
-        if (!mru.has(windowId)) {
-            const savedIds: number[] = saved[windowId] ?? [];
-
-            const queriedTabIds = tabs.map(t => t.id).filter(t => t !== undefined);
-
-            const allIds = new Set(savedIds.concat(queriedTabIds));
-
-            for (const id of allIds) {
-                addTab(windowId, id);
-            }
-            // const orderedTabs = savedIds
-            //     .map((id: number) => tabs.find(t => t.id === id))
-            //     .filter((t: chrome.tabs.Tab | undefined): t is chrome.tabs.Tab =>
-            //         t !== undefined && t.windowId === windowId
-            //     ).map(t => t.id);
-
-            // const existingIds = new Set(orderedTabs.map(t => t));
-            // const tabIds = tabs.filter(t =>
-            //         t.windowId === windowId && t.id !== undefined && !existingIds.has(t.id)
-            //     ).map(t => t.id)
-
-            // mru.set(windowId, [
-            //     ...orderedTabs,
-            // ]);
-        }
+        const windowTabs = mru.get(tab.windowId) ?? [];
+        windowTabs.push(tab.id);
+        mru.set(tab.windowId, windowTabs);
     }
 
+    for (const [windowId, windowTabs] of Object.entries(saved)) {
+        const currentTabs = mru.get(Number(windowId)) ?? [];
+        for (const tabId of windowTabs) {
+            if (windowTabs.includes(tabId)) continue
+            currentTabs.push(tabId);
+        }
+        mru.set(Number(windowId), currentTabs);
+    }
+
+    console.log("Current mru ", mru);
 
 }
 
