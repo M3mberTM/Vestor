@@ -1,34 +1,56 @@
 # Vestor
 
-A simple chrome extension for switching between different tabs.
+A simple Chrome extension for switching between tabs, inspired by **[Harpoon](https://github.com/ThePrimeagen/harpoon)** in **Neovim.**
 
-## Overall architecture
+The idea is simple!
 
-For now, timeouts are being used as a way to keep track what the user
-wants to do. Need to later add something more precise.
+Users can select tabs and add them to a list called the *harpoon*. They can then quickly navigate between these tabs using keyboard shortcuts.)
 
-```mermaid
-flowchart TD
-    A["Alt+Q command"] --> B{"Switching session active?"}
-    B -->|No| C["Get active window and tab"]
-    C --> D["Initialize switching target"]
-    B -->|Yes| E["Keep current switching target"]
-    D --> F["Advance to next tab in MRU order"]
-    E --> F
-    F --> G["Activate selected tab immediately"]
-    G --> H["Reset timeout"]
-    H --> I{"Another command before timeout?"}
-    I -->|Yes| F
-    I -->|No| J["Commit selected tab to MRU front"]
-    J --> K["Clear switching state"]
-```
+This makes it easier to work with frequently used tabs without having to search through all your open tabs.
 
-***Other things to keep in mind***;
+One thing to understand is that you can navigate to the first 4 tabs you added into the harpoon only.
+If you add more than 4 tabs into it, you can remove some of the previous tabs to be able to navigate
+to the new ones.
 
-| Situation | Handling |
-| --- | --- |
-| New tab created	| Add its ID to the correct window's list. |
-| Tab closed |	Remove its ID; if it was the switching target, choose a valid remaining tab. |
-| Tab moved to another window	| Remove it from the old window's list and add it to the new one. |
-| User switches tabs manually	| Move that tab to the front, unless it is an activation caused by Vestor's current switching session. |
-| User switches browser windows	| Start cycling in the newly active window, using that window's MRU list. |
+### Features
+
+- **Quick tab switching:** Jump directly to any of your four harpoon tabs using keyboard shortcuts.
+- **Window independent:** Each Chrome window has its own independent harpoon.
+- **Persistent storage:** Harpoon selections are saved, so they survive service worker restarts and browser sessions.
+- **Keyboard-driven:** Add, remove, and switch between tabs without interacting with the mouse.
+
+## Commands
+
+| Shortcut | Functionality                                            |
+| :------- | :------------------------------------------------------- |
+| `Alt+A`  | Adds the current tab to the harpoon                      |
+| `Alt+S`  | Removes the current tab from the harpoon                 |
+| `Alt+Q`  | Displays debug information in the service worker console |
+
+### Navigation shortcuts
+
+The user needs to bind their preferred shortcuts for navigating to individual harpoon tabs through Chrome's extension settings.
+
+| Command     | Functionality                      |
+| :---------- | :--------------------------------- |
+| `harpoon-1` | Switches to the first harpoon tab  |
+| `harpoon-2` | Switches to the second harpoon tab |
+| `harpoon-3` | Switches to the third harpoon tab  |
+| `harpoon-4` | Switches to the fourth harpoon tab |
+
+To configure these shortcuts, navigate to:
+
+`chrome://extensions/shortcuts`
+
+## Installation
+
+1. Clone this repository.
+2. Build the project (if applicable).
+3. Open `chrome://extensions` in Chrome.
+4. Enable **Developer mode**.
+5. Click **Load unpacked**.
+6. Select the extension's build directory.
+
+## Development
+
+Contributions, suggestions, and bug reports are welcome!

@@ -1,75 +1,83 @@
 console.log("background");
 
 import * as tabs from "./tabs";
-import { getNextTab, resetCounter, initializeCounterAndTimeout, removeCounterAndTimeout } from "./state";
-
-let pendingActivation: number | undefined;
-
-browser.windows.onCreated.addListener((window) => {
-    if (!window.id) return;
-    initializeCounterAndTimeout(window.id);
-})
 
 browser.windows.onRemoved.addListener((windowId) => {
-    removeCounterAndTimeout(windowId);
+    // remove the whole window from the harpoon
+    tabs.removeWindowFromHarpoon(windowId);
 })
 
-
-browser.tabs.onCreated.addListener(tab => {
-    tabs.addTab(tab.windowId, tab.id);
-});
-
 browser.tabs.onRemoved.addListener((tabId, info) => {
-    tabs.removeTab(info.windowId, tabId);
+    // remove the tab if it is in harpoon and move the rest of the tabs accordingly
+    tabs.removeTabFromHarpoon(tabId, info.windowId);
 });
 
-browser.tabs.onActivated.addListener(info => {
-    if (pendingActivation === info.tabId) {
-        pendingActivation = undefined;
-        return;
-    }
-
-    tabs.moveToFront(info.windowId, info.tabId);
-    resetCounter(info.windowId);
-});
 
 chrome.commands.onCommand.addListener(async (cmd, tab) => {
-    if (cmd !== "switch-recent-tab") return;
-    let windowId = tab?.windowId;
-    if (windowId === undefined) {
-        const window = await browser.windows.getLastFocused();
-        windowId = window.id;
-    }
-
-    if (windowId === undefined) return;
-
-    const nextTab = getNextTab(windowId);
-    if (nextTab === undefined) return;
-
-    pendingActivation = nextTab;
-
-    try {
-        await browser.tabs.update(nextTab, {
-            active: true
-        });
-    } catch (error) {
-        pendingActivation = undefined;
-        console.error(error);
+    switch (cmd) {
+        case "debug":
+            testCmd();
+            break;
+        case "add-to-harpoon":
+            addCmd(tab);
+            break;
+        case "remove-from-harpoon":
+            removeCmd(tab);
+            break;
+        case "harpoon-1":
+            activateCmd(0);
+            break;
+        case "harpoon-2":
+            activateCmd(1);
+            break;
+        case "harpoon-3":
+            activateCmd(2);
+            break;
+        case "harpoon-4":
+            activateCmd(3);
+            break;
+        default:
+            break;
     }
 });
 
-async function initialize() {
-    await tabs.initializeTabs();
-    await browser.windows.getAll().then((windows) =>{
-        console.log("loaded the windows", windows);
-        for (const window of windows) {
-            if (window.id === undefined) {
-                console.log("skipping ", window);
-                continue;
-            }
-            initializeCounterAndTimeout(window.id);
+async function testCmd() {
+    const allWindows = await chrome.windows.getAll();
+    console.log("=====Showing tabs per window=====");
+    for (const window of allWindows) {
+        if (window.id === undefined) {
+            continue;
         }
-    });
+        console.log(window.id, " contains ", tabs.getTabsInHarpoon(window.id));
+    }
+    console.log("================================");
+
+}
+
+function removeCmd(tab: chrome.tabs.Tab | undefined) {
+    if (tab === undefined || tab.id === undefined) {
+        return;
+    }
+    tabs.removeTabFromHarpoon(tab.id, tab.windowId);
+}
+function addCmd(tab: chrome.tabs.Tab | undefined) {
+    if (tab === undefined) {
+        return;
+    }
+    tabs.addTabToHarpoon(tab);
+}
+
+async function activateCmd(index: number) {
+    const currWindow = await chrome.windows.getCurrent();
+    if (currWindow.id === undefined) {
+        console.warn("Current window does not exist?");
+        return;
+    }
+    tabs.activateHarpoonAtPosition(index, currWindow.id);
+}
+
+async function initialize() {
+    tabs.initializeHarpoonFromStorage();
 }
 
 chrome.runtime.onStartup.addListener(initialize);

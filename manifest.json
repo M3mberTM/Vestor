@@ -2,17 +2,41 @@
 	"manifest_version": 3,
 	"name": "Vestor",
 	"version": "1.0.0",
-	"description": "Allows switching between the most recent tabs, similar to what Alt+Tab does on Windows",
-	"permissions": ["tabs", "storage", "activeTab"],
+	"description": "Chrome extension that allows quick switching between tabs by saving them when the user requests. The user can then request up to the first 4 saved tabs to make them active. Similar to harpoon in neovim",
+	"permissions": ["tabs", "storage"],
+	"icons": {
+        "128": "images/icon.png"
+    },
 	"background": {
 		"service_worker": "dist/background.js"
 	},
 	"commands": {
-		"switch-recent-tab": {
+		"add-to-harpoon": {
 			"suggested_key": {
-				"default": "Alt+Q"
+				"default": "Alt+A"
 			},
-			"description": "Switch to the most recently used tab"
+			"description": "Adds the current tab to the harpoon"
+		},
+		"remove-from-harpoon": {
+			"suggested_key": {
+				"default": "Alt+S"
+			},
+			"description": "Removes the current tab from harpoon if harpoon of the current window contains it"
+		},
+		"harpoon-1": {
+			"description": "Goes to the first harpoon tab"
+		},
+		"harpoon-2": {
+			"description": "Goes to the second harpoon tab"
+		},
+		"harpoon-3": {
+			"description": "Goes to the third harpoon tab"
+		},
+		"harpoon-4": {
+			"description": "Goes to the fourth harpoon tab"
+		},
+		"debug": {
+			"description": "Shows the current tabs in harpoon in the service worker console."
 		}
 	}
 }
