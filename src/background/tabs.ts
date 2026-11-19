@@ -26,7 +26,7 @@ export function getTabsInHarpoon(windowId: number) {
 export function removeTabFromHarpoon(tabId: TabId, windowId: number) {
     const harpoonTabs = getTabsInHarpoon(windowId);
     if (harpoonTabs.length === 0) {
-        console.log("Harpoon doesn't contain the current window");
+        console.log("Harpoon doesn't contain the current window or this window has 0 saved tabs");
         return;
     }
 
